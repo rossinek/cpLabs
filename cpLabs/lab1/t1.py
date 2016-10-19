@@ -121,10 +121,14 @@ def __image_menu():
 			print 'Unknown option selected!'
 			continue
 
-
 def __show_image(img):
+
 	cv2.imshow('Image',img)
 	cv2.waitKey(0)
-	cv2.destroyWindow('Image')
+	# HACK
+	# don't know why one call isn't work
+	for i in range(1,10):
+	    cv2.destroyAllWindows()
+	    cv2.waitKey(1)
 
 main()
