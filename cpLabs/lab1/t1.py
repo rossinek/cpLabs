@@ -44,13 +44,13 @@ def __action_menu(img_path, pattern_shift):
 			print '>', options[option][0]
 
 		if option==0:
-			slow_linear_demosaic(img)
+			slow_linear_demosaic(img, pattern_shift)
 			__show_image(img)
 		elif option==1:
-			linear_demosaic(img)
+			linear_demosaic(img, pattern_shift)
 			__show_image(img)
 		elif option==2:
-			slow_edge_based_demosaic(img)
+			slow_edge_based_demosaic(img, pattern_shift)
 			__show_image(img)
 		elif option==3:
 			gamma = __input_gamma()
@@ -137,6 +137,8 @@ def __image_menu():
 		['signs-small.png', 'cpLabs/static/images/raw/signs-small.png', [0,1]],
 		['text.png', 'cpLabs/static/images/raw/text.png', [0,1]],
 		['text2.png', 'cpLabs/static/images/raw/text2.png', [0,1]],
+		['my1.tiff', 'cpLabs/static/images/raw/my1.tiff', [1,0]],
+		['my2.tiff', 'cpLabs/static/images/raw/my2.tiff', [1,0]],
 		['Exit']]
 
 	while True: 
