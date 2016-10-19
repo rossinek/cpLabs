@@ -13,8 +13,8 @@ def main():
 		else:
 			return
 
-def __action_menu(img, pattern_shift):
-	img = cv2.imread('cpLabs/static/images/lighthouse_RAW_noisy_sigma0.01.png')
+def __action_menu(img_path, pattern_shift):
+	img = cv2.imread(img_path)
 	img_cp = img.copy()
 
 	options = [
