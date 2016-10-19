@@ -2,19 +2,15 @@ import cv2
 import numpy as np
 
 def demosaic(img, pattern_shift=[1,0]):
-	if(len(img.shape) != 3):
-		raise NotImplementedError, "demosaic for one-channel images is not implemented"
+	if(len(img.shape) != 3 or img.shape[2] != 3):
+		raise NotImplementedError, "demosaic implemented only for three-channel images"
 
 	(height, width, channels) = img.shape
 	
 	for y in range(0, height):
 		for x in range(0, width):
-			if __is_green_px(y,x,pattern_shift):
-				img[y,x,0] = img[y,x,2] = 0
-			elif __is_red_row(y,x,pattern_shift):
-				img[y,x,0] = img[y,x,1] = 0
-			else:
-				img[y,x,1] = img[y,x,2] = 0
+			color = __get_px_color(y,x,pattern_shift)
+			img[y,x,(color+1)%3] = img[y,x,(color-1)%3] = 0
 
 	# filling zeros for each color
 
@@ -48,12 +44,12 @@ def demosaic(img, pattern_shift=[1,0]):
 	out[1:,1:] += img[:-1,:-1,2]
 	out[1:,:-1] += img[:-1,1:,2]
 	out[:-1,1:] += img[1:,:-1,2]
-	img[1:-1,1:-1,2] = (out[1:-1,1:-1] / 4).astype('uint8')
+	img[1:-1,1:-1,2] = out[1:-1,1:-1] / 4
 
 
 def slow_demosaic(img, pattern_shift=[1,0]):
-	if(len(img.shape) != 3):
-		raise NotImplementedError, "demosaic for one-channel images is not implemented"
+	if(len(img.shape) != 3 or img.shape[2] != 3):
+		raise NotImplementedError, "demosaic implemented only for three-channel images"
 
 	(height, width, channels) = img.shape
 	
@@ -87,3 +83,11 @@ def __is_red_row(y, x, pattern_shift):
 
 def __is_blue_row(y, x, pattern_shift):
 	return (y%2) != (pattern_shift[1]%2)
+
+def __get_px_color(y, x, pattern_shift):
+	if __is_green_px(y,x,pattern_shift):
+		return 1
+	elif __is_red_row(y,x,pattern_shift):
+		return 2
+	else:
+		return 0
