@@ -1,5 +1,4 @@
 import cv2
-import numpy as np
 
 def linear_demosaic(img, pattern_shift=[1,0]):
 	if(len(img.shape) != 3 or img.shape[2] != 3):
