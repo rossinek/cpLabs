@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 
-def demosaic(img, pattern_shift=[1,0]):
+def basic_demosaic(img, pattern_shift=[1,0]):
 	if(len(img.shape) != 3 or img.shape[2] != 3):
 		raise NotImplementedError, "demosaic implemented only for three-channel images"
 
@@ -47,7 +47,7 @@ def demosaic(img, pattern_shift=[1,0]):
 	img[1:-1,1:-1,2] = out[1:-1,1:-1] / 4
 
 
-def slow_demosaic(img, pattern_shift=[1,0]):
+def slow_basic_demosaic(img, pattern_shift=[1,0]):
 	if(len(img.shape) != 3 or img.shape[2] != 3):
 		raise NotImplementedError, "demosaic implemented only for three-channel images"
 
