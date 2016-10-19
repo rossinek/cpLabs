@@ -38,6 +38,7 @@ def __action_menu(img, pattern_shift):
 		['linear_demosaic'],
 		['slow_edge_based_demosaic'],
 		['gamma_correction'],
+		['Save image'],
 		['Reset image'],
 		['Change image'],
 		['Exit']]
@@ -69,6 +70,8 @@ def __action_menu(img, pattern_shift):
 			gamma = __input_gamma()
 			gamma_correction(img, gamma)
 			__show_image(img)
+		elif option==len(options)-4: 
+			# TODO
 		elif option==len(options)-3: 
 			img=img_cp.copy()
 		elif option==len(options)-2: 
