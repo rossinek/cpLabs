@@ -89,30 +89,31 @@ def slow_edge_based_demosaic(img, pattern_shift=[1,0]):
 					img[y,x,1] = (int(img[y,x-1,1]) + int(img[y,x+1,1])) / 2
 
 	# interpolate R and B
-	# (interpolate R-G and add G)
-		
+	# 	- interpolate R-G or B-G
+	#	- add G
+
 	for y in range(1, height-1):
 		for x in range(1, width-1):
 			if __is_green_px(y, x, pattern_shift):
 				if __is_red_row(y, x, pattern_shift):
 					red = (int(img[y,x-1,2])-int(img[y,x-1,1])+int(img[y,x+1,2])-int(img[y,x+1,1]))/2 + int(img[y,x,1])
-					img[y,x,2] = max(red, 0)
+					img[y,x,2] = __constrain_uint8(red)
 					blue = (int(img[y-1,x,0])-int(img[y-1,x,1])+int(img[y+1,x,0])-int(img[y+1,x,1]))/2 + int(img[y,x,1])
-					img[y,x,0] = max(blue, 0)
+					img[y,x,0] = __constrain_uint8(blue)
 				else:
 
 					blue = (int(img[y,x-1,0])-int(img[y,x-1,1])+int(img[y,x+1,0])-int(img[y,x+1,1]))/2 + int(img[y,x,1])
-					img[y,x,0] = max(blue, 0)
+					img[y,x,0] = __constrain_uint8(blue)
 					red = (int(img[y-1,x,2])-int(img[y-1,x,1])+int(img[y+1,x,2])-int(img[y+1,x,1]))/2 + int(img[y,x,1])
-					img[y,x,2] = max(red,0)
+					img[y,x,2] = __constrain_uint8(red)
 
 			else:
 				if __is_red_row(y, x, pattern_shift):
 					blue = (int(img[y-1,x-1,0])-int(img[y-1,x-1,1]) + int(img[y-1,x+1,0])-int(img[y-1,x+1,1]) + int(img[y+1,x-1,0])-int(img[y+1,x-1,1]) + int(img[y+1,x+1,0])-int(img[y+1,x+1,1])) / 4 + int(img[y,x,1])
-					img[y,x,0] = max(blue,0)
+					img[y,x,0] = __constrain_uint8(blue)
 				else:
 					red = (int(img[y-1,x-1,2])-int(img[y-1,x-1,1]) + int(img[y-1,x+1,2])-int(img[y-1,x+1,1]) + int(img[y+1,x-1,2])-int(img[y+1,x-1,1]) + int(img[y+1,x+1,2])-int(img[y+1,x+1,1])) / 4 + int(img[y,x,1])
-					img[y,x,2] = max(red,0)
+					img[y,x,2] = __constrain_uint8(red)
 
 
 
@@ -139,3 +140,9 @@ def __get_px_color(y, x, pattern_shift):
 		return 2
 	else:
 		return 0
+
+def __constrain(v, min_v, max_v):
+	return min(max(v,min_v), max_v)
+
+def __constrain_uint8(v):
+	return min(max(v,0), 255)
