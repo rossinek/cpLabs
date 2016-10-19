@@ -71,7 +71,8 @@ def __action_menu(img, pattern_shift):
 			gamma_correction(img, gamma)
 			__show_image(img)
 		elif option==len(options)-4: 
-			# TODO
+			name = __input_image_name()
+			cv2.imwrite('output/'+name+'.png',img)
 		elif option==len(options)-3: 
 			img=img_cp.copy()
 		elif option==len(options)-2: 
@@ -93,6 +94,18 @@ def __input_gamma():
 		
 		if option:
 			return option
+		else:
+			print 'Wrong value!'
+
+import re
+def __input_image_name():
+	while True:
+		print 'Input filename'
+		input_string = raw_input('>>> ')
+		if re.match("[A-Za-z0-9-_]+$", input_string):
+			return input_string
+		else:
+			print 'Illegal filename! Should match ^[A-Za-z0-9-_]+$'
 
 def __image_menu():
 	options = [
