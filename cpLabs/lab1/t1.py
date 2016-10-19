@@ -1,6 +1,7 @@
 import cv2
 from cpLabs.lab1.demosaic import linear_demosaic, slow_linear_demosaic, slow_edge_based_demosaic
 from cpLabs.lab1.gamma_correction import gamma_correction
+from cpLabs.lab1.filters import median_filter, median_filter_chromacity
 
 def main():
 	while True:
@@ -21,6 +22,8 @@ def __action_menu(img, pattern_shift):
 		['linear_demosaic'],
 		['slow_edge_based_demosaic'],
 		['gamma_correction'],
+		['median_filter'],
+		['median_filter_chromacity'],
 		['Save image'],
 		['Reset image'],
 		['Change image'],
@@ -53,6 +56,16 @@ def __action_menu(img, pattern_shift):
 			gamma = __input_gamma()
 			gamma_correction(img, gamma)
 			__show_image(img)
+		elif option==4:
+			(height, width) = __input_filter_size()
+			median_filter(img, 0, height, width)
+			median_filter(img, 1, height, width)
+			median_filter(img, 2, height, width)
+			__show_image(img)
+		elif option==5:
+			(height, width) = __input_filter_size()
+			median_filter_chromacity(img, height, width)
+			__show_image(img)
 		elif option==len(options)-4: 
 			name = __input_image_name()
 			cv2.imwrite('output/'+name+'.png',img)
@@ -67,18 +80,45 @@ def __action_menu(img, pattern_shift):
 			continue
 
 def __input_gamma():
-	while True: 
+	while True:
 		print 'Input gamma (0.0 < x < 100.0))'
-		input_string = raw_input('>>> ') 
+		input_string = raw_input('>>> ')
 		try:
-			option = float(input_string)
+			gamma = float(input_string)
 		except ValueError:
-			option = None
+			gamma = None
 		
-		if option:
-			return option
+		if gamma and gamma > 0.0 and gamma < 100.0:
+			return gamma
 		else:
 			print 'Wrong value!'
+
+def __input_filter_size():
+	while True:
+		print 'Input height'
+		input_string = raw_input('>>> ')
+		try:
+			height = int(input_string)
+		except ValueError:
+			height = None
+		
+		if height and height > 0:
+			break
+		else:
+			print 'Wrong value!'
+	while True:
+		print 'Input width'
+		input_string = raw_input('>>> ')
+		try:
+			width = int(input_string)
+		except ValueError:
+			width = None
+		
+		if width and width > 0:
+			break
+		else:
+			print 'Wrong value!'
+	return (height, width)
 
 import re
 def __input_image_name():
