@@ -4,6 +4,7 @@ from cpLabs.lab1.gamma_correction import gamma_correction
 from cpLabs.lab1.filters import median_filter, median_filter_chromacity
 
 def main():
+	print "Features: demosaicing, gamma_correction, median_filter, median_filter_chromacity"
 	while True:
 		selection = __image_menu()
 		if selection:
