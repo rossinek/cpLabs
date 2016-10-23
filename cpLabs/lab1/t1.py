@@ -1,7 +1,7 @@
 import cv2
-from cpLabs.lab1.demosaic import linear_demosaic, slow_linear_demosaic, slow_edge_based_demosaic
-from cpLabs.lab1.gamma_correction import gamma_correction
-from cpLabs.lab1.filters import median_filter, median_filter_chromacity
+from cpLabs.lib.demosaic import linear_demosaic, slow_linear_demosaic, slow_edge_based_demosaic
+from cpLabs.lib.gamma_correction import gamma_correction
+from cpLabs.lib.filters import median_filter, median_filter_chromacity
 
 def main():
 	print "Features: demosaicing, gamma_correction, median_filter, median_filter_chromacity"
