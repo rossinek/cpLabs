@@ -1,13 +1,13 @@
+import numpy as np
 
 def gamma_correction(img, gamma):
-	if(len(img.shape) != 3):
-		(height, width) = img.shape
-		channels = 1
-	else:
-		(height, width, channels) = img.shape
-
 	gc = 1.0 / gamma
-	for y in range(0, height):
-		for x in range(0, width):
-			for c in range(0,channels):
-				img[y,x,c] = int(255.0*(float(img[y,x,c])/255.0)**gc)
+	img[...] = 255.0*(img/255.0)**gc
+
+def linearise_srgb(img):
+	vecfunc_linearize = np.vectorize(__linearize_srgb_value)
+	return vecfunc_linearize(img)
+
+def __linearize_srgb_value(v):
+    if (v<=0.04045): return v/12.92
+    else: return ((v+0.055)/1.055)**2.4
