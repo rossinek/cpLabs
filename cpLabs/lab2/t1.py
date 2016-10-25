@@ -12,8 +12,8 @@ def main():
 		cv2.imread("cpLabs/static/images/focalstack/stack3.png", 0)
 	]
 
-	output_simple, contrib_simple = all_in_focus(images, SIMPLE_OPERATOR_FLAG)
-	output_sobel, contrib_sobel = all_in_focus(images, SOBEL_OPERATOR_FLAG)
+	output_simple, contrib_simple = all_in_focus_crossing(images, SIMPLE_OPERATOR_FLAG)
+	output_sobel, contrib_sobel = all_in_focus_crossing(images, SOBEL_OPERATOR_FLAG)
 
 	display_array = [
 		images,
