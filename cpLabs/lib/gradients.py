@@ -3,8 +3,8 @@ import numpy as np
 from scipy import ndimage
 
 SIMPLE_GRADIENT_OPERATOR_FLAG = 0
-SIMPLE_GRADIENT_X_OPERATOR = np.array([[-1, 0, 1]])
-SIMPLE_GRADIENT_Y_OPERATOR = np.array([[-1], [0], [1]])
+SIMPLE_GRADIENT_X_OPERATOR = [[-1, 0, 1]]
+SIMPLE_GRADIENT_Y_OPERATOR = [[-1], [0], [1]]
 
 SOBEL_OPERATOR_FLAG = 1
 SOBEL_X_OPERATOR = np.array([
