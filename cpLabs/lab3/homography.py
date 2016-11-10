@@ -104,15 +104,15 @@ def apply_homography_bi2(train_img, poster_img, H):
                     )
     return output_img
 
-def apply_homography_bi3(train_img, poster_img, H, output_shape=None, offset=(0,0)):
+def apply_homography_bi3(img1, img2, H, output_shape=None, offset=(0,0)):
     if(output_shape):
-        output_img = np.zeros(output_shape, train_img.dtype)
+        output_img = np.zeros(output_shape, img1.dtype)
     else:
-        output_img = np.zeros_like(train_img)
+        output_img = np.zeros_like(img1)
 
     (height, width, channels) = output_img.shape
-    (poster_h, poster_w, poster_c) = poster_img.shape
-    (train_h, train_w, train_c) = train_img.shape
+    (h2, w2, c2) = img2.shape
+    (h1, w1, c1) = img1.shape
     (offset_y, offset_x) = offset
     
     for y in range(0, height):
@@ -123,21 +123,54 @@ def apply_homography_bi3(train_img, poster_img, H, output_shape=None, offset=(0,
             x1 = int(x_pos)
             x2 = x1+1
 
-            if  between(y1, 0, poster_h) \
-            and between(x1, 0, poster_w) \
-            and between(y2, 0, poster_h) \
-            and between(x2, 0, poster_w):
+            if  between(y1, 0, h2) \
+            and between(x1, 0, w2) \
+            and between(y2, 0, h2) \
+            and between(x2, 0, w2):
                 for i in range(0, channels):
                     output_img[y, x, i] = bilinear_interpolation(
                         y_pos,x_pos,
                         y1,y2,x1,x2,
-                        poster_img[y1, x1, i],
-                        poster_img[y1, x2, i],
-                        poster_img[y2, x1, i],
-                        poster_img[y2, x2, i]
+                        img2[y1, x1, i],
+                        img2[y1, x2, i],
+                        img2[y2, x1, i],
+                        img2[y2, x2, i]
                     )
             else:
-                if between(y-offset_y, 0, train_h) \
-                and between(x-offset_x, 0, train_w):
-                    output_img[y, x] = train_img[y-offset_y, x-offset_x]
+                if between(y-offset_y, 0, h1) \
+                and between(x-offset_x, 0, w1):
+                    output_img[y, x] = img1[y-offset_y, x-offset_x]
     return output_img
+
+def find_homography(p1, p2):
+    A = np.zeros((8, 9), np.float32)
+    for i in range(0,4): 
+        A[2*i]  = [-p1[i,0],-p1[i,1],-p1[i,2],0,0,0,(p2[i,0]/p2[i,2])*p1[i,0],(p2[i,0]/p2[i,2])*p1[i,1],(p2[i,0]/p2[i,2])*p1[i,2]]
+        A[2*i+1]= [0,0,0,-p1[i,0],-p1[i,1],-p1[i,2],(p2[i,1]/p2[i,2])*p1[i,0],(p2[i,1]/p2[i,2])*p1[i,1],(p2[i,1]/p2[i,2])*p1[i,2]]
+
+    U, s, V = np.linalg.svd(A, full_matrices=True)
+    H = V[8,:]
+    return H.reshape((3,3))
+
+def find_bounding_box((h1,w1,c1), (h2,w2,c2), H):
+    X = [0,w1]
+    Y = [0,h1]
+    H_inv = np.linalg.inv(H)
+    corners = [(0,0), (0,w2), (h2,0), (h2,w2)]
+    for (y,x) in corners:
+        (new_y, new_x) = calculate_coords(y,x,H_inv)
+        X.append(int(new_x))
+        Y.append(int(new_y))
+    
+    new_shape = (max(Y)-min(Y), max(X)-min(X), c1)
+    offset = (0-min(Y), 0-min(X))
+    
+    return new_shape, offset
+
+def bilinear_interpolation_float(y,x,y1,y2,x1,x2,v11,v12,v21,v22):
+    denominator = float((x2-x1)*(y2-y1))
+    result  = (((x2-x)*(y2-y))/denominator)*v11
+    result += (((x-x1)*(y2-y))/denominator)*v12
+    result += (((x2-x)*(y-y1))/denominator)*v21
+    result += (((x-x1)*(y-y1))/denominator)*v22
+    return result
