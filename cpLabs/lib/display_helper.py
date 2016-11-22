@@ -32,7 +32,7 @@ def draw_point(img, A):
 	cv2.rectangle(img, (A[0]-1,A[1]-1), (A[0]+1,A[1]+1), (0,255,0), -1)
 
 def draw_arrow(img, A, B):
-	cv2.line(img, A, B, (255,0,0), 1, cv2.CV_AA)
+	cv2.line(img, A, B, (255,0,0), 1, 8)
 	cv2.rectangle(img, (A[0]-1,A[1]-1), (A[0]+1,A[1]+1), (0,255,0), -1)
 	cv2.rectangle(img, (B[0]-1,B[1]-1), (B[0]+1,B[1]+1), (0,0,255), -1)
 
