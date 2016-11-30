@@ -1,3 +1,5 @@
+# from: https://github.com/alexanderkuk/log-progress
+
 def log_progress(sequence, every=None, size=None):
     from ipywidgets import IntProgress, HTML, VBox
     from IPython.display import display
@@ -46,3 +48,13 @@ def log_progress(sequence, every=None, size=None):
         progress.bar_style = 'success'
         progress.value = index
         label.value = str(index or '?')
+
+
+def log_message(msg):
+    from ipywidgets import HTML, VBox
+    from IPython.display import display
+
+    label = HTML()
+    box = VBox(children=[label])
+    display(box)
+    label.value = msg
