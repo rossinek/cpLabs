@@ -1,19 +1,29 @@
 import cv2
 import numpy as np
 
-mousedown = False
-mode = False 	# drawing / moving
-bx, by = -1, -1 # mouse position on keydown
-lx, ly = -1, -1 # previous mouse position
-fgx, fgy = 0, 0 # position of fg
+from lib.poisson import poisson_conj, naive_composite
+import sys
 
-fg = cv2.imread('data/bear.png')
-bg = cv2.imread('data/waterpool.png')
+
+if len(sys.argv) != 3:
+	sys.exit("Usage: %s <bg_path> <fg_path>" % sys.argv[0])
+
+bg_path = sys.argv[1]
+fg_path = sys.argv[2]
+
+mousedown = False
+mode = False 		# drawing / moving
+bx, by = -1, -1 	# mouse position on keydown
+lx, ly = -1, -1 	# previous mouse position
+fgx, fgy = 0, 0 	# position of fg
+
+fg = cv2.imread(fg_path)
+bg = cv2.imread(bg_path)
 
 resize_factor = min(float(bg.shape[0])/fg.shape[0], float(bg.shape[1])/fg.shape[1])
 
 if resize_factor < 1:
-	fg = cv2.resize(fg, (fg.shape[1]*resize_factor,fg.shape[0]*resize_factor))
+	fg = cv2.resize(fg, (int(fg.shape[1]*resize_factor),int(fg.shape[0]*resize_factor)))
 
 mask = np.zeros(fg.shape, np.uint8)
 
@@ -73,7 +83,6 @@ def state_display():
 	bmask = mask.astype(np.bool)
 	(bh,bw,bc) = bg.shape
 	(fh,fw,fc) = fg.shape
-
 	out = np.zeros((bh, bw+fw, bc), np.uint8)
 	out[:, fw:] = bg[...]
 	
@@ -82,7 +91,31 @@ def state_display():
 
 	return out
 
-
+def stretch_n_crop(shape, img, pos):
+	(h,w) = shape[:2]
+	(x,y) = pos
+	out = np.zeros(shape, img.dtype)
+	ax0, ay0 = max(0,-x), max(0,-y)
+	bx0, by0 = max(0,x), max(0,y)
+	aw = img.shape[1] - ax0
+	ah = img.shape[0] - ay0
+	bw = w - bx0
+	bh = h - by0
+	ax1 = ax0 + aw
+	ay1 = ay0 + ah
+	bx1 = bx0 + bw
+	by1 = by0 + bh
+	if bh>0 and bw>0 and ah>0 and aw>0:
+		if aw > bw:
+			ax1 = ax0 + bw
+		else:
+			bx1 = bx0 + aw
+		if ah > bh:
+			ay1 = ay0 + bh
+		else:
+			by1 = by0 + ah
+		out[by0:by1,bx0:bx1] = img[ay0:ay1,ax0:ax1]
+	return out
 
 cv2.namedWindow('image')
 cv2.setMouseCallback('image', mouse_paint)
@@ -93,10 +126,16 @@ while(1):
 	if k == ord('m'):
 		mode = not mode
 	elif (k == 13) or (k == 32):
+		(fh,fw,fc) = fg.shape
+		(bh,bw,bc) = bg.shape
+		fg_v = stretch_n_crop(bg.shape, fg, (fgx-fw,fgy))
+		mask_v = stretch_n_crop(bg.shape, mask, (fgx-fw,fgy))
 		
-		cv2.imshow('image',state_display())
+		disp = np.zeros((bh, bw+fw, bc), np.uint8)
+		disp[:, fw:] = poisson_conj(bg,fg_v,mask_v, 200)
+
+		cv2.imshow('image',disp)
 		cv2.waitKey(0)
-		break
 	elif k == 27:
 		break
 
